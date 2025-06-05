@@ -12,6 +12,7 @@ namespace IdentityDemo.Web.Controllers;
 
 public class AccountController(IUserService userService) : Controller
 {
+    [Authorize]
     [HttpGet("")]
     [HttpGet("members")]
     public IActionResult Members()
