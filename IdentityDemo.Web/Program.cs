@@ -1,9 +1,10 @@
 ﻿using IdentityDemo.Application.Users;
 using IdentityDemo.Infrastructure.Persistence;
 using IdentityDemo.Infrastructure.Services;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Options;
+
 
 namespace IdentityDemo.Web;
 
@@ -30,12 +31,31 @@ public class Program
         // Konfigurera EF
         builder.Services.AddDbContext<ApplicationContext>(
             o => o.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+        builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+            .AddCookie(option =>
+            {
+                option.LoginPath = "/Account/Login";
+            });
 
         var app = builder.Build();
 
         app.UseHttpsRedirection();
         app.MapControllers();
         app.UseAuthorization();
+
+        // Fix for CS0120: Use the HttpContext from the current request pipeline
+        //app.Use(async (context, next) =>
+        //{
+        //    Claim[] claims = new Claim[]
+        //    {
+        //        new Claim(ClaimTypes.Name, "Student"),
+        //    };
+
+        //    var identity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
+
+        //    await context.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(identity));
+        //    await next();
+        //});
 
         app.Run();
     }

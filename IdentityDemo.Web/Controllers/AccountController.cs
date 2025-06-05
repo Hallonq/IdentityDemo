@@ -1,12 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Authorization;
+﻿using IdentityDemo.Application.Dtos;
 using IdentityDemo.Application.Users;
-using IdentityDemo.Application.Dtos;
 using IdentityDemo.Web.Views.Account;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 
 namespace IdentityDemo.Web.Controllers;
 
@@ -69,5 +65,13 @@ public class AccountController(IUserService userService) : Controller
 
         // Redirect user
         return RedirectToAction(nameof(Members));
+    }
+
+    [HttpGet("logout")]
+    [Authorize]
+    public async Task<IActionResult> Logout()
+    {
+        await userService.SignOutAsync();
+        return RedirectToAction(nameof(Login));
     }
 }
